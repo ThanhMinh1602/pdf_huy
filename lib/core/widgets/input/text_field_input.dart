@@ -23,29 +23,29 @@ class TextFieldInput extends StatefulWidget {
   final int? maxLines;
   final bool isCrossAxisAlignmentTopTitle;
   final Color? suffixColor;
-
-  const TextFieldInput({
-    super.key,
-    this.title,
-    this.hintText = '',
-    this.isEnabled = true,
-    this.fillColor,
-    this.height,
-    this.onChanged,
-    this.initialValue,
-    this.isRequired = false,
-    this.textAlign,
-    this.prevIconWidget,
-    this.textAlignEndTitle = false,
-    this.widthTitle,
-    this.isShowSuffixIcon = false,
-    this.onSuffixTap,
-    this.suffixIconUrl,
-    this.suffixAssetUrl,
-    this.maxLines,
-    this.isCrossAxisAlignmentTopTitle = false,
-    this.suffixColor,
-  });
+  final TextEditingController? controller;
+  const TextFieldInput(
+      {super.key,
+      this.title,
+      this.hintText = '',
+      this.isEnabled = true,
+      this.fillColor,
+      this.height,
+      this.onChanged,
+      this.initialValue,
+      this.isRequired = false,
+      this.textAlign,
+      this.prevIconWidget,
+      this.textAlignEndTitle = false,
+      this.widthTitle,
+      this.isShowSuffixIcon = false,
+      this.onSuffixTap,
+      this.suffixIconUrl,
+      this.suffixAssetUrl,
+      this.maxLines,
+      this.isCrossAxisAlignmentTopTitle = false,
+      this.suffixColor,
+      this.controller});
 
   @override
   State<TextFieldInput> createState() => _TextFieldInputState();
@@ -104,6 +104,7 @@ class _TextFieldInputState extends State<TextFieldInput> {
             child: SizedBox(
               height: effectiveHeight,
               child: TextFormField(
+                controller: widget.controller,
                 initialValue: widget.initialValue,
                 style: const TextStyle(
                   color: Colors.black,
@@ -145,6 +146,7 @@ class _TextFieldInputState extends State<TextFieldInput> {
                     color: Color(0xFF979797),
                   ),
                   filled: true,
+                  
                   suffixIcon: widget.isShowSuffixIcon
                       ? IconButton(
                           padding: const EdgeInsets.all(10),
