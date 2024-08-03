@@ -207,47 +207,37 @@ import 'package:account/core/models/item_base_model.dart';
 import 'package:account/core/utils/spaces.dart';
 import 'package:flutter/material.dart';
 
-class CommonDropdown extends StatefulWidget {
+class CommonDropdown extends StatelessWidget {
   final String? title;
   final String? hintText;
   final List<ItemBaseModel> items;
-  final ItemBaseModel? value;
-  final Function(ItemBaseModel?)? onChanged;
+  final String? value;
+  final void Function(String?)? onChanged;
   final double? height;
   final double? width;
 
-  const CommonDropdown(
-      {super.key,
-      this.title,
-      this.hintText,
-      required this.items,
-      this.value,
-      this.onChanged,
-      this.height,
-      this.width});
-
-  @override
-  _CommonDropdownState createState() => _CommonDropdownState();
-}
-
-class _CommonDropdownState extends State<CommonDropdown> {
-  ItemBaseModel? _selectedItem;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedItem = widget.value;
-  }
+  const CommonDropdown({
+    super.key,
+    this.title,
+    this.hintText,
+    required this.items,
+    this.value,
+    this.onChanged,
+    this.height,
+    this.width,
+  });
 
   @override
   Widget build(BuildContext context) {
-    double effectiveHeight = widget.height ?? 36.0;
+    final double effectiveHeight = height ?? 36.0;
+    final Color iconColor =
+        value != null ? Colors.black : const Color(0xFF979797);
 
     return Row(
       children: [
-        if (widget.title != null) ...[
+        if (title != null) ...[
           Text(
-            widget.title ?? '',
+            title!,
             style: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 14,
@@ -258,15 +248,15 @@ class _CommonDropdownState extends State<CommonDropdown> {
         Expanded(
           child: SizedBox(
             height: effectiveHeight,
-            width: widget.width,
-            child: DropdownButtonFormField<ItemBaseModel>(
+            width: width,
+            child: DropdownButtonFormField<String>(
               isExpanded: true,
               dropdownColor: Colors.white,
-              value: _selectedItem,
-              items: widget.items
+              value: value,
+              items: items
                   .map(
-                    (item) => DropdownMenuItem<ItemBaseModel>(
-                      value: item,
+                    (item) => DropdownMenuItem<String>(
+                      value: item.name,
                       child: Text(
                         item.name ?? '',
                         style: const TextStyle(
@@ -277,29 +267,18 @@ class _CommonDropdownState extends State<CommonDropdown> {
                     ),
                   )
                   .toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedItem = value;
-                });
-                if (widget.onChanged != null) {
-                  widget.onChanged!(value);
-                }
-              },
-              hint: widget.hintText != null
+              onChanged: onChanged,
+              hint: hintText != null
                   ? Text(
-                      widget.hintText!,
+                      hintText!,
                       style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF979797)),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF979797),
+                      ),
                     )
                   : null,
-              icon: Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: widget.value != null
-                    ? Colors.black
-                    : const Color(0xFF979797),
-              ),
+              icon: Icon(Icons.keyboard_arrow_down_rounded, color: iconColor),
               decoration: InputDecoration(
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 22),

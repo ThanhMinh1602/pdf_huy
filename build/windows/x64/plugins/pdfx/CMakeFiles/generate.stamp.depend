@@ -1,0 +1,8 @@
+# CMake generation dependency list for this directory.
+D:/ThanhMinh/huy/test/build/windows/x64/pdfium-src/PDFiumConfig.cmake
+D:/ThanhMinh/huy/test/windows/flutter/ephemeral/.plugin_symlinks/pdfx/windows/CMakeLists.txt
+D:/ThanhMinh/huy/test/windows/flutter/ephemeral/.plugin_symlinks/pdfx/windows/DownloadProject.CMakeLists.cmake.in
+D:/ThanhMinh/huy/test/windows/flutter/ephemeral/.plugin_symlinks/pdfx/windows/DownloadProject.cmake
+D:/ThanhMinh/huy/vscode_setup/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.28/Modules/CMakeParseArguments.cmake
+D:/ThanhMinh/huy/vscode_setup/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake
+D:/ThanhMinh/huy/vscode_setup/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.28/Modules/FindPackageMessage.cmake

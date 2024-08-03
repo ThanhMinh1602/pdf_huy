@@ -433,7 +433,7 @@ packages:
     source: hosted
     version: "4.0.2"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
@@ -785,10 +785,10 @@ packages:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: "76c0efa89c79108f043602b0170512f88fcb83156cca7f5ca6dfe17e840bc63d"
+      sha256: fd4d2cdbf8d0d1e3441817cb8a03f896566fad5187788957e78492fe16800388
       url: "https://pub.dev"
     source: hosted
-    version: "26.1.42"
+    version: "26.2.7"
   syncfusion_flutter_datepicker:
     dependency: "direct main"
     description:
@@ -798,13 +798,13 @@ packages:
     source: hosted
     version: "26.1.42"
   syncfusion_flutter_pdf:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: syncfusion_flutter_pdf
-      sha256: "5d349b58edbb5530f0e825ddc802644723b555fe360a8f32c5b0b42b799d9678"
+      sha256: e9b449989f4f5b34d56a1f7b6df2843b4ed116c9c7a77947874e2199ff91b217
       url: "https://pub.dev"
     source: hosted
-    version: "26.1.42"
+    version: "26.2.7"
   syncfusion_flutter_pdfviewer:
     dependency: "direct main"
     description:

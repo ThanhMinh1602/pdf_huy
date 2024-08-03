@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "D:/ThanhMinh/huy/test/build/windows/x64/pdfium-download/CMakeFiles/pdfium-download"
+		},
+		{
+			"file" : "D:/ThanhMinh/huy/test/build/windows/x64/pdfium-download/CMakeFiles/ea75ccac4ff9ff7e6d604157965c87ba/pdfium-download.rule"
+		},
+		{
+			"file" : "D:/ThanhMinh/huy/test/build/windows/x64/pdfium-download/CMakeFiles/a7c9b4f7632f8fe337e0f7f343959a42/pdfium-download-complete.rule"
+		},
+		{
+			"file" : "D:/ThanhMinh/huy/test/build/windows/x64/pdfium-download/CMakeFiles/af397cd79d16f35216f320996c8f7578/pdfium-download-build.rule"
+		},
+		{
+			"file" : "D:/ThanhMinh/huy/test/build/windows/x64/pdfium-download/CMakeFiles/af397cd79d16f35216f320996c8f7578/pdfium-download-configure.rule"
+		},
+		{
+			"file" : "D:/ThanhMinh/huy/test/build/windows/x64/pdfium-download/CMakeFiles/af397cd79d16f35216f320996c8f7578/pdfium-download-download.rule"
+		},
+		{
+			"file" : "D:/ThanhMinh/huy/test/build/windows/x64/pdfium-download/CMakeFiles/af397cd79d16f35216f320996c8f7578/pdfium-download-install.rule"
+		},
+		{
+			"file" : "D:/ThanhMinh/huy/test/build/windows/x64/pdfium-download/CMakeFiles/af397cd79d16f35216f320996c8f7578/pdfium-download-mkdir.rule"
+		},
+		{
+			"file" : "D:/ThanhMinh/huy/test/build/windows/x64/pdfium-download/CMakeFiles/af397cd79d16f35216f320996c8f7578/pdfium-download-patch.rule"
+		},
+		{
+			"file" : "D:/ThanhMinh/huy/test/build/windows/x64/pdfium-download/CMakeFiles/af397cd79d16f35216f320996c8f7578/pdfium-download-test.rule"
+		},
+		{
+			"file" : "D:/ThanhMinh/huy/test/build/windows/x64/pdfium-download/CMakeFiles/af397cd79d16f35216f320996c8f7578/pdfium-download-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"pdfium-download"
+		],
+		"name" : "pdfium-download"
+	}
+}

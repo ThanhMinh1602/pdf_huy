@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:account/core/constants/app_color.dart';
 import 'package:account/core/models/item_base_model.dart';
 import 'package:account/core/utils/color_resources.dart';
@@ -8,10 +10,12 @@ import 'package:account/core/widgets/input/common_dropdown.dart';
 import 'package:account/core/widgets/input/text_field_input.dart';
 import 'package:account/features/e03R00002/cubit/e03_r00002_cubit.dart';
 import 'package:account/features/e03R00002/cubit/e03_r00002_state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pdfx/pdfx.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class E03R00002Pdf extends StatefulWidget {
   const E03R00002Pdf({super.key});
@@ -56,21 +60,27 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
                       SizedBox(
                         width: 320,
                         child: CommonDropdown(
+                          value: state.profileType,
+                          onChanged: (value) {
+                            context
+                                .read<E03R00002Cubit>()
+                                .selectProfileType(value);
+                          },
                           items: [
                             ItemBaseModel(
-                              id: 1,
+                              id: 0,
                               name: 'Nhân Sự',
                             ),
                             ItemBaseModel(
-                              id: 2,
+                              id: 1,
                               name: 'Kế toán',
                             ),
                             ItemBaseModel(
-                              id: 3,
+                              id: 2,
                               name: 'CNTT',
                             ),
                             ItemBaseModel(
-                              id: 4,
+                              id: 3,
                               name: 'Marketing',
                             )
                           ],
@@ -88,18 +98,17 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
                       SizedBox(
                         width: 302,
                         child: GestureDetector(
-                          // onTap: () async {
-                          //   final time = await showDatePicker(
-                          //     context: context,
-                          //     firstDate: DateTime.now(),
-                          //     lastDate: DateTime(3099),
-                          //     currentDate: DateTime.now(),
-                          //     useRootNavigator: false
-                          //   );
-                          //   context
-                          //       .read<E03R00002Cubit>()
-                          //       .onSelectDateTime(time ?? DateTime.now());
-                          // },
+                          onTap: () async {
+                            final time = await showDatePicker(
+                                context: context,
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime(3099),
+                                currentDate: DateTime.now(),
+                                useRootNavigator: false);
+                            context
+                                .read<E03R00002Cubit>()
+                                .onSelectDateTime(time ?? DateTime.now());
+                          },
                           child: TextFieldInput(
                             title: "Ngày",
                             controller:
@@ -115,6 +124,11 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
                       const SizedBox(width: 20),
                       Expanded(
                         child: CommonDropdown(
+                          onChanged: (value) {
+                            context
+                                .read<E03R00002Cubit>()
+                                .selectSignatory(value);
+                          },
                           items: [
                             ItemBaseModel(
                               id: 1,
@@ -152,7 +166,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
       builder: (context, state) {
         if (state.filePickerResult == null) {
           return const Center(
-            child: Text('Chưa có file pdf nào được chọn'),
+            child: Text('Chưa có file nào được chọn'),
           );
         }
         return Container(
@@ -185,10 +199,15 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
                 ),
               ),
               Expanded(
-                child: PdfViewPinch(
-                    controller: PdfControllerPinch(
-                        document: PdfDocument.openData(
-                            state.filePickerResult!.files.single.bytes!))),
+                child: kIsWeb
+                    ? state.filePickerResult!.files.single.bytes != null
+                        ? SfPdfViewer.memory(
+                            state.filePickerResult!.files.single.bytes!)
+                        : const Center(child: Text('No PDF selected'))
+                    : state.filePickerResult!.files.single.path != null
+                        ? SfPdfViewer.file(
+                            File(state.filePickerResult!.files.single.path!))
+                        : const Center(child: Text('No PDF selected')),
               ),
             ],
           ),
