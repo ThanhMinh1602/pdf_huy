@@ -10,11 +10,11 @@ import 'package:account/core/widgets/input/common_dropdown.dart';
 import 'package:account/core/widgets/input/text_field_input.dart';
 import 'package:account/features/e03R00002/cubit/e03_r00002_cubit.dart';
 import 'package:account/features/e03R00002/cubit/e03_r00002_state.dart';
+import 'package:account/features/e03R00002/domain/usecase/validate_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pdfx/pdfx.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class E03R00002Pdf extends StatefulWidget {
@@ -25,6 +25,7 @@ class E03R00002Pdf extends StatefulWidget {
 }
 
 class _E03R00002PdfState extends State<E03R00002Pdf> {
+  final validateUsecase = ValidateUsecase();
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<E03R00002Cubit, E03R00002State>(
@@ -272,11 +273,19 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
       child: SizedBox(
         width: 100,
         child: CommonButton(
-          onTap: () {
-            context.read<E03R00002Cubit>().onSubmitPdfFile(
-                profileType: 'Nhân Sự', signatory: "Thanh Minh");
-          },
-          backgroundColor: ColorResources.buttonSave,
+          onTap: validateUsecase(context.read<E03R00002Cubit>().state)
+              ? () {
+                  final state = context.read<E03R00002Cubit>().state;
+                  if (validateUsecase(state)) {
+                    context.read<E03R00002Cubit>().onSubmitPdfFile(
+                        profileType: state.profileType ?? '',
+                        signatory: state.signatory ?? '');
+                  }
+                }
+              : null,
+          backgroundColor: validateUsecase(context.read<E03R00002Cubit>().state)
+              ? ColorResources.buttonSave
+              : AppColor.c_939291,
           buttonIcon: IconsApp.add,
           textName: "Tải lên",
         ),

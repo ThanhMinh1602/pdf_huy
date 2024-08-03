@@ -1,11 +1,9 @@
 // ignore: depend_on_referenced_packages
-import 'package:account/core/models/item_base_model.dart';
 import 'package:account/features/e03R00002/cubit/e03_r00002_state.dart';
 import 'package:account/features/e03R00002/domain/usecase/file_picker_usecase.dart';
 import 'package:account/features/e03R00002/models/pdf_file_model.dart';
 import 'package:account/utils/date_format.dart';
 import 'package:bloc/bloc.dart';
-import 'package:pdfx/pdfx.dart';
 
 class E03R00002Cubit extends Cubit<E03R00002State> {
   final PdfPickerUsecase pdfPickerUsecase;
@@ -47,7 +45,7 @@ extension HandleCubit on E03R00002Cubit {
       signatory: signatory,
       pdfFile: filePickerResult.files.single.bytes,
     );
-
+    print('pdfFileModel$pdfFileModel');
     final updatedPdfFileModels = [
       ...?state.pdfFileModels,
       pdfFileModel,

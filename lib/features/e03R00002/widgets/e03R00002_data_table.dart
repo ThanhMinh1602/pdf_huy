@@ -1,12 +1,14 @@
-
+// ignore: file_names
 import 'package:account/core/constants/app_color.dart';
 import 'package:account/core/constants/app_style.dart';
 import 'package:account/core/utils/color_resources.dart';
 import 'package:account/core/utils/icons.dart';
 import 'package:account/core/widgets/button/common_elevated_button.dart';
 import 'package:account/core/widgets/table/number_paginator.dart';
-import 'package:account/features/e01S01003/bloc/e01S01003_bloc.dart';
-import 'package:account/features/e01S01003/model/role_group/role_group.dart';
+import 'package:account/features/e03R00002/cubit/e03_r00002_cubit.dart';
+import 'package:account/features/e03R00002/cubit/e03_r00002_state.dart';
+import 'package:account/features/e03R00002/models/pdf_file_model.dart';
+import 'package:account/utils/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,37 +31,34 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
           color: AppColor.c_F8FAFC,
           borderRadius: BorderRadius.circular(8.0),
         ),
-        child: BlocProvider(
-          create: (context) => E01S01003Bloc(),
-          child: BlocConsumer<E01S01003Bloc, E01S01003State>(
-            listener: (context, state) {},
-            builder: (context, state) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10.0),
-                    _buildLeftHeader(
-                      onTapBack: () {},
-                    ),
-                    _buildTable(context,
-                        dataRows: state.roleGroups, state: state),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        NumberPaginator(
-                          limit: 10,
-                          currentPage: 1,
-                          numberPages: 10,
-                          onLimitChange: (p0) {},
-                          onPageChange: (p0) {},
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+        child: BlocConsumer<E03R00002Cubit, E03R00002State>(
+          listener: (context, state) {},
+          builder: (context, state) {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 10.0),
+                  _buildLeftHeader(
+                    onTapBack: () {},
+                  ),
+                  _buildTable(context,
+                      dataRows: state.pdfFileModels ?? [], state: state),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      NumberPaginator(
+                        limit: 10,
+                        currentPage: 1,
+                        numberPages: 10,
+                        onLimitChange: (p0) {},
+                        onPageChange: (p0) {},
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
@@ -83,7 +82,7 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
   }
 
   Widget _buildTable(BuildContext context,
-      {required List<RoleGroup> dataRows, required E01S01003State state}) {
+      {required List<PdfFileModel> dataRows, required E03R00002State state}) {
     return Column(
       children: [
         Table(
@@ -104,13 +103,7 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
             for (int i = 0; i < dataRows.length; i++)
               _buildTableRow(
                 dataRows[i],
-                id: dataRows[i].id,
-                current: state.curentTableUser,
-                onTapRow: () {
-                  context
-                      .read<E01S01003Bloc>()
-                      .add(E01S01003Event.onTapDetailRole(dataRows[i]));
-                },
+                onTapRow: () {},
                 index: i,
                 state: state,
               ),
@@ -135,46 +128,24 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
     );
   }
 
-  TableRow _buildTableRow(RoleGroup roleGroupSimple,
+  TableRow _buildTableRow(PdfFileModel pdfFileModel,
       {required int index,
-      required E01S01003State state,
-      required int current,
-      required int id,
+      required E03R00002State state,
       void Function()? onTapRow}) {
-    final isSelected = state.selectedRoleGroupIds.contains(roleGroupSimple.id);
-
     return TableRow(
       decoration: BoxDecoration(
         color: index % 2 == 1 ? AppColor.c_F0FAFE : AppColor.c_F8FAFC,
       ),
       children: [
-        state.isAllowsMultiSelectGroupRole
-            ? Checkbox(
-                value: isSelected,
-                onChanged: (value) {
-                  if (value != null) {
-                    context
-                        .read<E01S01003Bloc>()
-                        .add(E01S01003Event.toggleCheckbox(roleGroupSimple.id));
-                  }
-                },
-              )
-            : _buildTableCell(text: roleGroupSimple.id.toString()),
-        _buildTableCell(text: roleGroupSimple.roleCode, onTap: onTapRow),
-        _buildTableCell(text: roleGroupSimple.roleName, onTap: onTapRow),
-        _buildTableCell(text: roleGroupSimple.roleName, onTap: onTapRow),
+        _buildTableCell(text: index.toString()),
+        _buildTableCell(
+            text: DateTimeFormat.formatDateDDMMYYHHMM(
+                pdfFileModel.createdAt ?? DateTime.now()),
+            onTap: onTapRow),
+        _buildTableCell(text: pdfFileModel.profileType ?? '', onTap: onTapRow),
+        _buildTableCell(text: pdfFileModel.name ?? '', onTap: onTapRow),
         _buildDeleteButton(
-          onTap: () {
-            if (current == 0) {
-              context.read<E01S01003Bloc>().add(
-                    E01S01003Event.unSelectDept(id),
-                  );
-            } else {
-              context.read<E01S01003Bloc>().add(
-                    E01S01003Event.unSelectAccount(id),
-                  );
-            }
-          },
+          onTap: () {},
         ),
       ],
     );
@@ -190,7 +161,7 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
       child: Container(
         height: isHeader == true ? 48.0 : 40,
         alignment: Alignment.center,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           border: Border.symmetric(
             vertical: BorderSide(
               color: AppColor.c_FFFFFF,
@@ -201,7 +172,7 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
         child: Text(
           text,
           style: isHeader == true
-              ? TextStyle(
+              ? const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: AppColor.c_323F4B,
