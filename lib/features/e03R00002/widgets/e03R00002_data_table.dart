@@ -132,12 +132,13 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
       {required int index,
       required E03R00002State state,
       void Function()? onTapRow}) {
+    final reversedIndex = (state.pdfFileModels?.length ?? 0) - index;
     return TableRow(
       decoration: BoxDecoration(
         color: index % 2 == 1 ? AppColor.c_F0FAFE : AppColor.c_F8FAFC,
       ),
       children: [
-        _buildTableCell(text: index.toString()),
+        _buildTableCell(text: reversedIndex.toString()),
         _buildTableCell(
             text: DateTimeFormat.formatDateDDMMYYHHMM(
                 pdfFileModel.createdAt ?? DateTime.now()),
@@ -145,7 +146,9 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
         _buildTableCell(text: pdfFileModel.profileType ?? '', onTap: onTapRow),
         _buildTableCell(text: pdfFileModel.name ?? '', onTap: onTapRow),
         _buildDeleteButton(
-          onTap: () {},
+          onTap: () {
+            context.read<E03R00002Cubit>().removePdfFile(pdfFileModel.id!);
+          },
         ),
       ],
     );

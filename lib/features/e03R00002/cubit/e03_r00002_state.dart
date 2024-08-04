@@ -10,9 +10,10 @@ class E03R00002State {
   final bool isLoading;
   final FilePickerResult? filePickerResult;
   final List<PdfFileModel>? pdfFileModels;
-  final String? createdAt;
+  final DateTime? createdAt;
   final String? profileType;
   final String? signatory;
+  final bool? scannedDocument;
 
   E03R00002State(
       {this.isLoading = false,
@@ -20,5 +21,6 @@ class E03R00002State {
       this.pdfFileModels,
       this.createdAt,
       this.profileType,
-      this.signatory,});
+      this.signatory,
+      this.scannedDocument = false});
 }

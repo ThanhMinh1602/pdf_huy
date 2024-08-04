@@ -3,16 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomCheckBox extends StatelessWidget {
-  const CustomCheckBox({
-    super.key,
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  });
+  CustomCheckBox(
+      {super.key,
+      required this.title,
+      required this.value,
+      required this.onChanged,
+      this.widthTitle,
+      this.textAlignEndTitle});
 
-  final String label;
+  final String title;
   final bool value;
   final ValueChanged<bool> onChanged;
+  final double? widthTitle;
+  TextAlign? textAlignEndTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +32,17 @@ class CustomCheckBox extends StatelessWidget {
           activeColor: Colors.grey,
           checkColor: Colors.black,
         ),
-        Text(
-          label,
-          style: GoogleFonts.nunito(
-            fontWeight: FontWeight.w600,
-            fontSize: 16.8,
-            color: AppColor.c_323F4B,
+        SizedBox(
+          width: widthTitle,
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            textAlign: textAlignEndTitle ?? TextAlign.end,
           ),
-        )
+        ),
       ],
     );
   }

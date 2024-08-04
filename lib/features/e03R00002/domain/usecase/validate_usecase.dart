@@ -4,7 +4,7 @@ class ValidateUsecase {
   bool call(E03R00002State state) {
     return state.filePickerResult != null &&
         state.profileType != null &&
-        state.createdAt!.isNotEmpty &&
+        state.createdAt != null &&
         state.signatory != null;
   }
 }

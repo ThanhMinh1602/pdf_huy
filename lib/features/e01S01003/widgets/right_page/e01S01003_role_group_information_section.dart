@@ -1,4 +1,3 @@
-
 import 'package:account/core/constants/app_color.dart';
 import 'package:account/core/constants/app_style.dart';
 import 'package:account/core/widgets/check_box/app_checkbox.dart';
@@ -82,7 +81,7 @@ class _E01S01003RoleGroupInformationSectionState
         ),
         const SizedBox(width: 20),
         CustomCheckBox(
-          label: 'Sử dụng',
+          title: 'Sử dụng',
           onChanged: (value) {},
           value: isUsed == 0 ? false : true,
         ),

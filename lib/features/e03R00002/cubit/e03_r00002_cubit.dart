@@ -4,6 +4,7 @@ import 'package:account/features/e03R00002/domain/usecase/file_picker_usecase.da
 import 'package:account/features/e03R00002/models/pdf_file_model.dart';
 import 'package:account/utils/date_format.dart';
 import 'package:bloc/bloc.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class E03R00002Cubit extends Cubit<E03R00002State> {
   final PdfPickerUsecase pdfPickerUsecase;
@@ -18,8 +19,7 @@ extension HandleCubit on E03R00002Cubit {
       state.copyWith(
         isLoading: false,
         filePickerResult: filePickerResult,
-        createdAt:
-            state.createdAt ?? DateTimeFormat.formatDateDDMMYY(DateTime.now()),
+        createdAt: state.createdAt ?? DateTime.now(),
       ),
     );
   }
@@ -32,30 +32,34 @@ extension HandleCubit on E03R00002Cubit {
     emit(state.copyWith(signatory: signatory));
   }
 
-  void onSubmitPdfFile(
-      {required String profileType, required String signatory}) {
+  void onSubmitPdfFile(PdfFileModel pdfFileModel) {
     final filePickerResult = state.filePickerResult;
     if (filePickerResult == null) return;
 
-    final pdfFileModel = PdfFileModel(
-      id: '1',
-      name: filePickerResult.files.single.name,
-      profileType: profileType,
-      createdAt: DateTime.parse(state.createdAt ?? DateTime.now().toString()),
-      signatory: signatory,
-      pdfFile: filePickerResult.files.single.bytes,
-    );
-    print('pdfFileModel$pdfFileModel');
+    print('pdfFileModel${pdfFileModel.id}');
+
+    // Tạo danh sách mới và đảo ngược
     final updatedPdfFileModels = [
       ...?state.pdfFileModels,
       pdfFileModel,
-    ];
+    ].reversed.toList();
 
+    // Phát ra trạng thái mới với danh sách đã đảo ngược
+    emit(state.copyWith(pdfFileModels: updatedPdfFileModels));
+  }
+
+  void removePdfFile(String id) {
+    final updatedPdfFileModels =
+        state.pdfFileModels?.where((model) => model.id != id).toList() ?? [];
     emit(state.copyWith(pdfFileModels: updatedPdfFileModels));
   }
 
   Future<void> onSelectDateTime(DateTime time) async {
     final date = DateTimeFormat.formatDateDDMMYY(time);
-    emit(state.copyWith(createdAt: date));
+    emit(state.copyWith(createdAt: time));
+  }
+
+  void scannedDocumentOnCheck(bool scanned) {
+    emit(state.copyWith(scannedDocument: scanned));
   }
 }

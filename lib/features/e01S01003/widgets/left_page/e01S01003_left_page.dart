@@ -1,4 +1,3 @@
-
 import 'package:account/core/constants/app_color.dart';
 import 'package:account/core/constants/app_style.dart';
 import 'package:account/core/utils/color_resources.dart';
@@ -11,7 +10,6 @@ import 'package:account/features/e01S01003/bloc/e01S01003_bloc.dart';
 import 'package:account/features/e01S01003/model/role_group/role_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class E01S01003LeftPage extends StatefulWidget {
   const E01S01003LeftPage({super.key});
@@ -45,7 +43,7 @@ class _E01S01003LeftPageState extends State<E01S01003LeftPage> {
                     onTapRemove: () {},
                   ),
                   CustomCheckBox(
-                    label: 'Chọn',
+                    title: 'Chọn',
                     onChanged: (value) {
                       context
                           .read<E01S01003Bloc>()
