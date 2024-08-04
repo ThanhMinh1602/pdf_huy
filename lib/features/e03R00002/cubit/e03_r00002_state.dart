@@ -8,6 +8,7 @@ part 'e03_r00002_state.g.dart';
 @CopyWith()
 class E03R00002State {
   final bool isLoading;
+  final PdfFileModel? pdfFileModel;
   final FilePickerResult? filePickerResult;
   final List<PdfFileModel>? pdfFileModels;
   final DateTime? createdAt;
@@ -18,6 +19,7 @@ class E03R00002State {
   E03R00002State(
       {this.isLoading = false,
       this.filePickerResult,
+      this.pdfFileModel,
       this.pdfFileModels,
       this.createdAt,
       this.profileType,

@@ -209,6 +209,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
         const SizedBox(width: 20),
         Expanded(
           child: CommonDropdown(
+            value: state.signatory,
             onChanged: (value) {
               context.read<E03R00002Cubit>().selectSignatory(value);
             },
@@ -286,6 +287,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
                             signatory: state.signatory,
                           ),
                         );
+                    noteController.clear();
                   }
                 }
               : null,

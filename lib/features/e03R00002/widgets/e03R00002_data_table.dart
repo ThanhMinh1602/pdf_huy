@@ -103,7 +103,9 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
             for (int i = 0; i < dataRows.length; i++)
               _buildTableRow(
                 dataRows[i],
-                onTapRow: () {},
+                onTapRow: () {
+                  context.read<E03R00002Cubit>().reviewDocument(dataRows[i]);
+                },
                 index: i,
                 state: state,
               ),
@@ -147,7 +149,7 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
         _buildTableCell(text: pdfFileModel.name ?? '', onTap: onTapRow),
         _buildDeleteButton(
           onTap: () {
-            context.read<E03R00002Cubit>().removePdfFile(pdfFileModel.id!);
+            context.read<E03R00002Cubit>().removePdfFile(pdfFileModel.id);
           },
         ),
       ],

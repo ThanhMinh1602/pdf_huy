@@ -43,9 +43,13 @@ extension HandleCubit on E03R00002Cubit {
       ...?state.pdfFileModels,
       pdfFileModel,
     ].reversed.toList();
-
     // Phát ra trạng thái mới với danh sách đã đảo ngược
-    emit(state.copyWith(pdfFileModels: updatedPdfFileModels));
+    emit(
+      state.copyWith(
+        pdfFileModels: updatedPdfFileModels,
+      ),
+    );
+    clearState();
   }
 
   void removePdfFile(String id) {
@@ -62,11 +66,29 @@ extension HandleCubit on E03R00002Cubit {
   }
 
   Future<void> onSelectDateTime(DateTime time) async {
-    final date = DateTimeFormat.formatDateDDMMYY(time);
     emit(state.copyWith(createdAt: time));
   }
 
   void scannedDocumentOnCheck(bool scanned) {
     emit(state.copyWith(scannedDocument: scanned));
+  }
+
+  void reviewDocument(PdfFileModel pdfFileModel) {
+    emit(state.copyWith(
+      createdAt: pdfFileModel.createdAt,
+      profileType: pdfFileModel.profileType,
+      scannedDocument: pdfFileModel.scannedDocument,
+      signatory: pdfFileModel.signatory,
+    ));
+  }
+
+  void clearState() {
+    emit(state.copyWith(
+      filePickerResult: null,
+      profileType: null,
+      createdAt: null,
+      scannedDocument: false,
+      signatory: null,
+    ));
   }
 }
