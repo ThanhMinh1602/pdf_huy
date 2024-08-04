@@ -278,16 +278,16 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
                   if (validateUsecase(state)) {
                     context.read<E03R00002Cubit>().onSubmitPdfFile(
                           PdfFileModel(
-                            createdAt: state.createdAt,
-                            name: state.filePickerResult?.files.single.name,
-                            note: noteController.text,
-                            pdfFile: state.filePickerResult?.files.single.bytes,
-                            profileType: state.profileType,
-                            scannedDocument: state.scannedDocument,
-                            signatory: state.signatory,
-                          ),
+                              createdAt: state.createdAt,
+                              name: state.filePickerResult?.files.single.name,
+                              note: noteController.text,
+                              pdfFile:
+                                  state.filePickerResult?.files.single.bytes,
+                              profileType: state.profileType,
+                              scannedDocument: state.scannedDocument,
+                              signatory: state.signatory,
+                              filePickerResult: state.filePickerResult),
                         );
-                    noteController.clear();
                   }
                 }
               : null,

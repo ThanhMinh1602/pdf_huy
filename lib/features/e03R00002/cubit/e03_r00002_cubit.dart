@@ -2,9 +2,7 @@
 import 'package:account/features/e03R00002/cubit/e03_r00002_state.dart';
 import 'package:account/features/e03R00002/domain/usecase/file_picker_usecase.dart';
 import 'package:account/features/e03R00002/models/pdf_file_model.dart';
-import 'package:account/utils/date_format.dart';
 import 'package:bloc/bloc.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class E03R00002Cubit extends Cubit<E03R00002State> {
   final PdfPickerUsecase pdfPickerUsecase;
@@ -75,11 +73,11 @@ extension HandleCubit on E03R00002Cubit {
 
   void reviewDocument(PdfFileModel pdfFileModel) {
     emit(state.copyWith(
-      createdAt: pdfFileModel.createdAt,
-      profileType: pdfFileModel.profileType,
-      scannedDocument: pdfFileModel.scannedDocument,
-      signatory: pdfFileModel.signatory,
-    ));
+        createdAt: pdfFileModel.createdAt,
+        profileType: pdfFileModel.profileType,
+        scannedDocument: pdfFileModel.scannedDocument,
+        signatory: pdfFileModel.signatory,
+        filePickerResult: pdfFileModel.filePickerResult));
   }
 
   void clearState() {
