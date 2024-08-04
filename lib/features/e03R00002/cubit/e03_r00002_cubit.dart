@@ -54,6 +54,13 @@ extension HandleCubit on E03R00002Cubit {
     emit(state.copyWith(pdfFileModels: updatedPdfFileModels));
   }
 
+  Future<void> saveAndSubmitAllFile() async {
+    //submit data lên api
+    //........
+    //clear data list
+    emit(state.copyWith(pdfFileModels: []));
+  }
+
   Future<void> onSelectDateTime(DateTime time) async {
     final date = DateTimeFormat.formatDateDDMMYY(time);
     emit(state.copyWith(createdAt: time));

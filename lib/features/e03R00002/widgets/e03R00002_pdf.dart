@@ -247,12 +247,15 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
   }
 
   Widget _buildButtonSave() {
-    return const Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         SizedBox(
           width: 128,
           child: CommonButton(
+            onTap: () {
+              context.read<E03R00002Cubit>().saveAndSubmitAllFile();
+            },
             backgroundColor: ColorResources.buttonSave,
             buttonIcon: IconsApp.edit,
             textName: "Lưu và ký gửi",
