@@ -5,6 +5,7 @@ import 'package:account/core/models/item_base_model.dart';
 import 'package:account/core/utils/color_resources.dart';
 import 'package:account/core/utils/icons.dart';
 import 'package:account/core/utils/spaces.dart';
+import 'package:account/core/utils/styles.dart';
 import 'package:account/core/widgets/button/common_button.dart';
 import 'package:account/core/widgets/check_box/app_checkbox.dart';
 import 'package:account/core/widgets/input/common_dropdown.dart';
@@ -12,10 +13,9 @@ import 'package:account/core/widgets/input/text_field_input.dart';
 import 'package:account/features/e03R00002/cubit/e03_r00002_cubit.dart';
 import 'package:account/features/e03R00002/cubit/e03_r00002_state.dart';
 import 'package:account/features/e03R00002/domain/usecase/validate_usecase.dart';
-import 'package:account/features/e03R00002/models/pdf_file_model.dart';
-import 'package:account/utils/date_format.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -29,7 +29,18 @@ class E03R00002Pdf extends StatefulWidget {
 
 class _E03R00002PdfState extends State<E03R00002Pdf> {
   final validateUsecase = ValidateUsecase();
-  final noteController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<E03R00002Cubit>().init();
+  }
+
+  @override
+  void dispose() {
+    context.read<E03R00002Cubit>().pdfViewerController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +69,14 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
                   spaceH20,
                   _buildScannedDocumentsAndNotes(context, state),
                   spaceH24,
-                  _buildButtonUpload(context, state),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      _buildEditButon(context, state),
+                      spaceW10,
+                      _buildButtonUpload(context, state),
+                    ],
+                  ),
                   spaceH10,
                   _buildPdfViewer(state),
                 ],
@@ -88,25 +106,163 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
       ),
       child: Column(
         children: [
-          Container(
-            height: 50.0,
-            width: double.infinity,
-            alignment: Alignment.topCenter,
-            color: AppColor.c_323639,
-            child: const Row(children: []),
+          _buildControllerPdfViewer(
+            fileName: state.filePickerResult?.name ?? '',
+            onSubmitted: (value) {
+              context.read<E03R00002Cubit>().updateCurrentPage(
+                    int.parse(value),
+                  );
+            },
+            curentPageController:
+                context.read<E03R00002Cubit>().curentPageController,
+            percentController: context.read<E03R00002Cubit>().percentController,
+            maxPage: state.maxPage ?? 0,
+            onTapZoomIn: () => context.read<E03R00002Cubit>().zoomIn(),
+            onTapZoomOut: () {
+              context.read<E03R00002Cubit>().zoomOut();
+            },
+            onTapDownload: () {},
+            onTapPrint: () {},
+            onTapRotate: () {},
           ),
           Expanded(
             child: kIsWeb
-                ? state.filePickerResult!.files.single.bytes != null
+                ? state.filePickerResult?.bytes != null
                     ? SfPdfViewer.memory(
-                        state.filePickerResult!.files.single.bytes!)
+                        controller:
+                            context.read<E03R00002Cubit>().pdfViewerController,
+                        maxZoomLevel: 100,
+                        onZoomLevelChanged: (details) {},
+                        state.filePickerResult!.bytes!)
                     : const Center(child: Text('No PDF selected'))
-                : state.filePickerResult!.files.single.path != null
+                : state.filePickerResult!.path != null
                     ? SfPdfViewer.file(
-                        File(state.filePickerResult!.files.single.path!))
+                        controller:
+                            context.read<E03R00002Cubit>().pdfViewerController,
+                        File(state.filePickerResult!.path!))
                     : const Center(child: Text('No PDF selected')),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildControllerPdfViewer(
+      {required String fileName,
+      TextEditingController? percentController,
+      TextEditingController? curentPageController,
+      required int maxPage,
+      void Function()? onTapZoomOut,
+      void Function()? onTapZoomIn,
+      void Function()? onTapRotate,
+      void Function()? onTapDownload,
+      void Function()? onTapPrint,
+      void Function(String)? onSubmitted}) {
+    return Container(
+      height: 50.0,
+      width: double.infinity,
+      color: AppColor.c_323639,
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Icon(Icons.menu, color: AppColor.c_FFFFFF, size: 30.0),
+          spaceW10,
+          SizedBox(
+            width: 400.0,
+            child: Text(
+              overflow: TextOverflow.ellipsis,
+              fileName,
+              style: poppinsRegular.copyWith(
+                fontSize: 15,
+                color: AppColor.c_FFFFFF,
+              ),
+            ),
+          ),
+          spaceW10,
+          _buildInput(
+              width: 30,
+              onSubmitted: onSubmitted,
+              controller: curentPageController),
+          spaceW10,
+          const Text('/',
+              style: TextStyle(color: AppColor.c_FFFFFF, fontSize: 20.0)),
+          spaceW10,
+          Text(
+            maxPage.toString(),
+            style: const TextStyle(color: AppColor.c_FFFFFF, fontSize: 15),
+          ),
+          spaceW10,
+          const VerticalDivider(
+              width: 1, indent: 5, endIndent: 5, color: AppColor.c_FFFFFF),
+          spaceW10,
+          _buildButtonZoom(icon: Icons.remove, onTap: onTapZoomOut),
+          _buildInput(width: 60, controller: percentController),
+          _buildButtonZoom(icon: Icons.add, onTap: onTapZoomIn),
+          spaceW10,
+          const VerticalDivider(
+            width: 1,
+            indent: 5,
+            endIndent: 5,
+            color: AppColor.c_FFFFFF,
+          ),
+          spaceW10,
+          _buildControllerIcon(
+              icon: Icons.rotate_90_degrees_ccw_outlined, onTap: onTapRotate),
+          const Spacer(),
+          _buildControllerIcon(icon: Icons.download, onTap: onTapDownload),
+          spaceW10,
+          _buildControllerIcon(icon: Icons.print, onTap: onTapPrint),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControllerIcon(
+      {required IconData icon, void Function()? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Icon(icon, color: AppColor.c_FFFFFF, size: 25.0),
+    );
+  }
+
+  GestureDetector _buildButtonZoom(
+      {required IconData icon, void Function()? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Icon(icon, color: AppColor.c_FFFFFF)),
+    );
+  }
+
+  Widget _buildInput(
+      {TextEditingController? controller,
+      double? width,
+      void Function(String)? onSubmitted}) {
+    return SizedBox(
+      width: width,
+      height: 30,
+      child: TextField(
+        controller: controller,
+        onSubmitted: onSubmitted,
+        decoration: const InputDecoration(
+          errorBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          border: InputBorder.none,
+          filled: true,
+          fillColor: AppColor.c_242220,
+          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+          isDense: true,
+        ),
+        keyboardType: TextInputType.number,
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.digitsOnly,
+        ],
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 14, color: AppColor.c_FFFFFF),
       ),
     );
   }
@@ -129,7 +285,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
             children: [
               SvgPicture.network("assets/icons/pdf.svg"),
               Text(
-                state.filePickerResult?.files.single.name ??
+                state.filePickerResult?.name ??
                     "Kéo thả hoặc bấm vào đây để tải tập tin lên",
                 style: const TextStyle(color: Colors.grey, fontSize: 14),
               ),
@@ -145,8 +301,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
     return Row(
       children: [
         TextFieldInput(
-          controller: TextEditingController(
-              text: state.filePickerResult?.files.single.name ?? ''),
+          controller: context.read<E03R00002Cubit>().fileNameController,
           title: "Tên file",
           textAlignEndTitle: true,
           isEnabled: true,
@@ -193,11 +348,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
             },
             child: TextFieldInput(
               title: "Ngày",
-              controller: TextEditingController(
-                text: DateTimeFormat.formatDateDDMMYY(
-                  state.createdAt ?? DateTime.now(),
-                ),
-              ),
+              controller: context.read<E03R00002Cubit>().dateController,
               textAlignEndTitle: true,
               isEnabled: false,
               suffixAssetUrl: IconsApp.calendar,
@@ -238,7 +389,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
         ),
         spaceW40,
         TextFieldInput(
-          controller: noteController,
+          controller: context.read<E03R00002Cubit>().noteController,
           title: "Ghi chú",
           textAlignEndTitle: true,
           isEnabled: true,
@@ -266,6 +417,23 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
     );
   }
 
+  Widget _buildAddNewPdf() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        SizedBox(
+          width: 128,
+          child: CommonButton(
+            onTap: () {},
+            backgroundColor: ColorResources.buttonSave,
+            buttonIcon: IconsApp.add,
+            textName: "Lưu và ký gửi",
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildButtonUpload(BuildContext context, E03R00002State state) {
     final isEnabled = validateUsecase(state);
     return Align(
@@ -275,19 +443,8 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
         child: CommonButton(
           onTap: isEnabled
               ? () {
-                  if (validateUsecase(state)) {
-                    context.read<E03R00002Cubit>().onSubmitPdfFile(
-                          PdfFileModel(
-                              createdAt: state.createdAt,
-                              name: state.filePickerResult?.files.single.name,
-                              note: noteController.text,
-                              pdfFile:
-                                  state.filePickerResult?.files.single.bytes,
-                              profileType: state.profileType,
-                              scannedDocument: state.scannedDocument,
-                              signatory: state.signatory,
-                              filePickerResult: state.filePickerResult),
-                        );
+                  if (isEnabled) {
+                    context.read<E03R00002Cubit>().onSubmitPdfFile();
                   }
                 }
               : null,
@@ -295,6 +452,21 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
               isEnabled ? ColorResources.buttonSave : AppColor.c_939291,
           buttonIcon: IconsApp.add,
           textName: "Tải lên",
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditButon(BuildContext context, E03R00002State state) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: SizedBox(
+        width: 100,
+        child: CommonButton(
+          onTap: () {},
+          backgroundColor: ColorResources.buttonSave,
+          buttonIcon: IconsApp.add,
+          textName: "Edit",
         ),
       ),
     );
