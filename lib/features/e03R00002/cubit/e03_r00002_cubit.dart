@@ -5,6 +5,7 @@ import 'package:account/features/e03R00002/models/pdf_file_model.dart';
 import 'package:account/utils/date_format.dart';
 import 'package:account/utils/open_pdf.dart';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -94,6 +95,7 @@ extension HandleCubit on E03R00002Cubit {
   void onSubmitPdfFile() {
     final filePickerResult = state.filePickerResult;
     if (filePickerResult == null) return;
+
     final PdfFileModel pdfFileModel = PdfFileModel(
       name: fileNameController.text,
       profileType: state.profileType,
@@ -101,20 +103,23 @@ extension HandleCubit on E03R00002Cubit {
       signatory: state.signatory,
       scannedDocument: state.scannedDocument,
       note: noteController.text,
-      pdfFile: filePickerResult.bytes,
-      pdfPath: filePickerResult.path,
+      pdfFile: kIsWeb ? filePickerResult.bytes : null,
+      pdfPath: kIsWeb ? '' : filePickerResult.path ?? '',
     );
+
     // Tạo danh sách mới và đảo ngược
     final updatedPdfFileModels = [
       ...?state.pdfFileModels,
       pdfFileModel,
     ].reversed.toList();
-    //  trạng thái mới với danh sách đã đảo ngược
+
+    // Cập nhật trạng thái mới với danh sách đã đảo ngược
     emit(
       state.copyWith(
         pdfFileModels: updatedPdfFileModels,
       ),
     );
+
     clearState();
   }
 
