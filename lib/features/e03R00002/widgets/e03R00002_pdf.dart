@@ -72,9 +72,12 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      _buildEditButon(context, state),
+                      if (state.isEdit == true)
+                        _buildUpdateButon(context, state),
                       spaceW10,
-                      _buildButtonUpload(context, state),
+                      state.isEdit == true
+                          ? _buildAddNewButton(context, state)
+                          : _buildButtonUpload(context, state),
                     ],
                   ),
                   spaceH10,
@@ -129,6 +132,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
             child: kIsWeb
                 ? state.filePickerResult?.bytes != null
                     ? SfPdfViewer.memory(
+                        interactionMode: PdfInteractionMode.selection,
                         controller:
                             context.read<E03R00002Cubit>().pdfViewerController,
                         maxZoomLevel: 100,
@@ -417,29 +421,12 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
     );
   }
 
-  Widget _buildAddNewPdf() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        SizedBox(
-          width: 128,
-          child: CommonButton(
-            onTap: () {},
-            backgroundColor: ColorResources.buttonSave,
-            buttonIcon: IconsApp.add,
-            textName: "Lưu và ký gửi",
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildButtonUpload(BuildContext context, E03R00002State state) {
     final isEnabled = validateUsecase(state);
     return Align(
       alignment: Alignment.centerRight,
       child: SizedBox(
-        width: 100,
+        width: 120,
         child: CommonButton(
           onTap: isEnabled
               ? () {
@@ -449,7 +436,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
                 }
               : null,
           backgroundColor:
-              isEnabled ? ColorResources.buttonSave : AppColor.c_939291,
+              (isEnabled) ? ColorResources.buttonSave : AppColor.c_939291,
           buttonIcon: IconsApp.add,
           textName: "Tải lên",
         ),
@@ -457,16 +444,32 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
     );
   }
 
-  Widget _buildEditButon(BuildContext context, E03R00002State state) {
+  Widget _buildAddNewButton(BuildContext context, E03R00002State state) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: SizedBox(
+        width: 120,
+        child: CommonButton(
+          onTap: () => context.read<E03R00002Cubit>().addNew(),
+          backgroundColor: ColorResources.buttonSave,
+          buttonIcon: IconsApp.add,
+          textName: "Thêm mới",
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUpdateButon(BuildContext context, E03R00002State state) {
     return Align(
       alignment: Alignment.centerRight,
       child: SizedBox(
         width: 100,
         child: CommonButton(
-          onTap: () {},
+          onTap: () =>
+              context.read<E03R00002Cubit>().updatePdfFile(),
           backgroundColor: ColorResources.buttonSave,
           buttonIcon: IconsApp.add,
-          textName: "Edit",
+          textName: "Cập nhật",
         ),
       ),
     );

@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class E03R00002Cubit extends Cubit<E03R00002State> {
   final PdfPickerUsecase pdfPickerUsecase;
@@ -56,24 +57,33 @@ extension HandleCubit on E03R00002Cubit {
     }
   }
 
-  void rotate() {}
-
+  void rotate() async {}
   void zoomIn() {
-    final newZoomLevel = (pdfViewerController.zoomLevel + 0.2).clamp(1.0, 3.0);
-    pdfViewerController.zoomLevel = newZoomLevel;
-    final zoomPercentage = (newZoomLevel / 3.0) * 300;
-    percentController.text = '${zoomPercentage.toStringAsFixed(0)}%';
+    try {
+      final newZoomLevel =
+          (pdfViewerController.zoomLevel + 0.2).clamp(1.0, 3.0);
+      pdfViewerController.zoomLevel = newZoomLevel;
+      final zoomPercentage = (newZoomLevel / 3.0) * 300;
+      percentController.text = '${zoomPercentage.toStringAsFixed(0)}%';
 
-    emit(state.copyWith(currentZoom: newZoomLevel));
+      emit(state.copyWith(currentZoom: newZoomLevel));
+    } catch (error) {
+      print('Error in zoomIn: $error');
+    }
   }
 
   void zoomOut() {
-    final newZoomLevel = (pdfViewerController.zoomLevel - 0.2).clamp(1.0, 3.0);
-    pdfViewerController.zoomLevel = newZoomLevel;
-    final zoomPercentage = (newZoomLevel / 3.0) * 300;
-    percentController.text = '${zoomPercentage.toStringAsFixed(0)}%';
+    try {
+      final newZoomLevel =
+          (pdfViewerController.zoomLevel - 0.2).clamp(1.0, 3.0);
+      pdfViewerController.zoomLevel = newZoomLevel;
+      final zoomPercentage = (newZoomLevel / 3.0) * 300;
+      percentController.text = '${zoomPercentage.toStringAsFixed(0)}%';
 
-    emit(state.copyWith(currentZoom: newZoomLevel));
+      emit(state.copyWith(currentZoom: newZoomLevel));
+    } catch (error) {
+      print('Error in zoomOut: $error');
+    }
   }
 
   void download() {}
@@ -81,7 +91,11 @@ extension HandleCubit on E03R00002Cubit {
   void printDocument() {}
 
   void updateCurrentPage(int pageNumber) async {
-    pdfViewerController.jumpToPage(pageNumber);
+    try {
+      pdfViewerController.jumpToPage(pageNumber);
+    } catch (error) {
+      print('Error in updateCurrentPage: $error');
+    }
   }
 
   void selectProfileType(String? profileType) {
@@ -93,34 +107,37 @@ extension HandleCubit on E03R00002Cubit {
   }
 
   void onSubmitPdfFile() {
-    final filePickerResult = state.filePickerResult;
-    if (filePickerResult == null) return;
+    try {
+      if (state.isEdit == true) {
+        clearState();
+      }
+      final filePickerResult = state.filePickerResult;
+      if (filePickerResult == null) return;
 
-    final PdfFileModel pdfFileModel = PdfFileModel(
-      name: fileNameController.text,
-      profileType: state.profileType,
-      createdAt: state.createdAt,
-      signatory: state.signatory,
-      scannedDocument: state.scannedDocument,
-      note: noteController.text,
-      pdfFile: kIsWeb ? filePickerResult.bytes : null,
-      pdfPath: kIsWeb ? '' : filePickerResult.path ?? '',
-    );
+      final PdfFileModel pdfFileModel = PdfFileModel(
+        name: fileNameController.text,
+        profileType: state.profileType,
+        createdAt: state.createdAt,
+        signatory: state.signatory,
+        scannedDocument: state.scannedDocument,
+        note: noteController.text,
+        pdfFile: kIsWeb ? filePickerResult.bytes : null,
+        pdfPath: kIsWeb ? '' : filePickerResult.path ?? '',
+      );
+      final updatedPdfFileModels = [
+        ...?state.pdfFileModels,
+        pdfFileModel,
+      ].reversed.toList();
+      emit(
+        state.copyWith(
+          pdfFileModels: updatedPdfFileModels,
+        ),
+      );
 
-    // Tạo danh sách mới và đảo ngược
-    final updatedPdfFileModels = [
-      ...?state.pdfFileModels,
-      pdfFileModel,
-    ].reversed.toList();
-
-    // Cập nhật trạng thái mới với danh sách đã đảo ngược
-    emit(
-      state.copyWith(
-        pdfFileModels: updatedPdfFileModels,
-      ),
-    );
-
-    clearState();
+      clearState();
+    } catch (error) {
+      print('Error in onSubmitPdfFile: $error');
+    }
   }
 
   void removePdfFile(String id) {
@@ -145,16 +162,55 @@ extension HandleCubit on E03R00002Cubit {
     emit(state.copyWith(scannedDocument: scanned));
   }
 
+  void addNew() {
+    emit(state.copyWith(isEdit: false));
+    clearState();
+  }
+
   void reviewDocument(PdfFileModel pdfFileModel) {
     fileNameController.text = pdfFileModel.name!;
     dateController.text =
         DateTimeFormat.formatDateDDMMYY(pdfFileModel.createdAt!);
     emit(state.copyWith(
-      createdAt: pdfFileModel.createdAt,
-      profileType: pdfFileModel.profileType,
-      scannedDocument: pdfFileModel.scannedDocument,
-      signatory: pdfFileModel.signatory,
-    ));
+        createdAt: pdfFileModel.createdAt,
+        profileType: pdfFileModel.profileType,
+        scannedDocument: pdfFileModel.scannedDocument,
+        signatory: pdfFileModel.signatory,
+        isEdit: true,
+        pdfFileModel: pdfFileModel));
+  }
+
+  void updatePdfFile() {
+    try {
+      if (state.pdfFileModel == null) return;
+      final updatedPdfFileModel = state.pdfFileModel!.copyWith(
+        name: fileNameController.text,
+        profileType: state.profileType,
+        createdAt: state.createdAt,
+        signatory: state.signatory,
+        scannedDocument: state.scannedDocument,
+        note: noteController.text,
+        pdfFile: kIsWeb
+            ? state.filePickerResult?.bytes
+            : state.pdfFileModel?.pdfFile,
+        pdfPath: kIsWeb
+            ? ''
+            : state.filePickerResult?.path ?? state.pdfFileModel?.pdfPath,
+      );
+
+      final updatedPdfFileModels = state.pdfFileModels
+          ?.map((model) =>
+              model.id == updatedPdfFileModel.id ? updatedPdfFileModel : model)
+          .toList();
+
+      emit(state.copyWith(
+        pdfFileModels: updatedPdfFileModels,
+        pdfFileModel: updatedPdfFileModel,
+      ));
+      clearState();
+    } catch (error) {
+      print('Error in updatePdfFile: $error');
+    }
   }
 
   void clearState() {

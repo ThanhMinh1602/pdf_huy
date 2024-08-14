@@ -1,6 +1,10 @@
 import 'dart:typed_data';
 import 'package:uuid/uuid.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
 
+part 'pdf_file_model.g.dart';
+
+@CopyWith()
 class PdfFileModel {
   final String id;
   final String? name;

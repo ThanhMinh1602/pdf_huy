@@ -18,6 +18,7 @@ class E03R00002State {
   final int? currentPage;
   final int? maxPage;
   final double? currentZoom;
+  final bool? isEdit;
 
   E03R00002State({
     this.isLoading = false,
@@ -31,5 +32,6 @@ class E03R00002State {
     this.currentPage,
     this.maxPage,
     this.currentZoom,
+    this.isEdit = false,
   });
 }

@@ -162,7 +162,7 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
     void Function()? onTap,
   }) {
     return GestureDetector(
-      onTap: onTap,
+      onDoubleTap: onTap,
       child: Container(
         height: isHeader == true ? 48.0 : 40,
         alignment: Alignment.center,
@@ -204,3 +204,4 @@ class _E03R00002DataTableState extends State<E03R00002DataTable> {
     );
   }
 }
+  

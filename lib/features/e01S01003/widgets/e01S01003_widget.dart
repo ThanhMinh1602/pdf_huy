@@ -11,7 +11,7 @@ class E01S01003Widget extends StatelessWidget {
     return HomeTemplate(
       isPrimaryNavigationVisible: true,
       title: "NHÓM QUYỀN",
-      child: Expanded(
+      child:const Expanded(
         child: Row(
           children: [
             E01S01003LeftPage(),
