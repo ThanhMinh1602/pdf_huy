@@ -206,6 +206,7 @@ extension HandleCubit on E03R00002Cubit {
         signatory: state.signatory,
         scannedDocument: state.scannedDocument,
         note: noteController.text,
+        filePickerResult: state.filePickerResult  ,
         pdfFile: kIsWeb
             ? state.filePickerResult?.bytes
             : state.pdfFileModel?.pdfFile,
