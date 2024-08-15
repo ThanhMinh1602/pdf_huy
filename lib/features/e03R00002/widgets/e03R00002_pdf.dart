@@ -126,24 +126,32 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
             },
             onTapDownload: () {},
             onTapPrint: () {},
-            onTapRotate: () {},
+            onTapRotate: () => context.read<E03R00002Cubit>().rotate(),
           ),
           Expanded(
             child: kIsWeb
                 ? state.filePickerResult?.bytes != null
-                    ? SfPdfViewer.memory(
-                        interactionMode: PdfInteractionMode.selection,
-                        controller:
-                            context.read<E03R00002Cubit>().pdfViewerController,
-                        maxZoomLevel: 100,
-                        onZoomLevelChanged: (details) {},
-                        state.filePickerResult!.bytes!)
+                    ? RotatedBox(
+                        quarterTurns: state.quarterTurns,
+                        child: SfPdfViewer.memory(
+                            interactionMode: PdfInteractionMode.selection,
+                            controller: context
+                                .read<E03R00002Cubit>()
+                                .pdfViewerController,
+                            maxZoomLevel: 100,
+                            onZoomLevelChanged: (details) {},
+                            state.filePickerResult!.bytes!),
+                      )
                     : const Center(child: Text('No PDF selected'))
                 : state.filePickerResult!.path != null
-                    ? SfPdfViewer.file(
-                        controller:
-                            context.read<E03R00002Cubit>().pdfViewerController,
-                        File(state.filePickerResult!.path!))
+                    ? RotatedBox(
+                        quarterTurns: state.quarterTurns,
+                        child: SfPdfViewer.file(
+                            controller: context
+                                .read<E03R00002Cubit>()
+                                .pdfViewerController,
+                            File(state.filePickerResult!.path!)),
+                      )
                     : const Center(child: Text('No PDF selected')),
           ),
         ],
@@ -465,8 +473,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
       child: SizedBox(
         width: 100,
         child: CommonButton(
-          onTap: () =>
-              context.read<E03R00002Cubit>().updatePdfFile(),
+          onTap: () => context.read<E03R00002Cubit>().updatePdfFile(),
           backgroundColor: ColorResources.buttonSave,
           buttonIcon: IconsApp.add,
           textName: "Cập nhật",

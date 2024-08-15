@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 
@@ -15,6 +16,8 @@ class PdfFileModel {
   final bool? scannedDocument;
   final String? note;
   final String? pdfPath;
+  final PlatformFile filePickerResult;
+
   PdfFileModel({
     String? id,
     this.name,
@@ -25,5 +28,6 @@ class PdfFileModel {
     this.scannedDocument,
     this.note,
     this.pdfPath,
+    required this.filePickerResult,
   }) : id = id ?? const Uuid().v4();
 }

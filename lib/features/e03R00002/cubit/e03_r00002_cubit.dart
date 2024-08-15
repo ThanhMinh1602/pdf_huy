@@ -7,9 +7,7 @@ import 'package:account/utils/open_pdf.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:pdfx/pdfx.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class E03R00002Cubit extends Cubit<E03R00002State> {
   final PdfPickerUsecase pdfPickerUsecase;
@@ -46,18 +44,26 @@ extension HandleCubit on E03R00002Cubit {
       dateController.text = DateTimeFormat.formatDateDDMMYY(DateTime.now());
 
       emit(state.copyWith(
-        filePickerResult: filePickerResult,
-        maxPage: maxPage,
-        isLoading: false,
-        createdAt: DateTime.now(),
-      ));
+          filePickerResult: filePickerResult,
+          maxPage: maxPage,
+          isLoading: false,
+          createdAt: DateTime.now(),
+          currentZoom: 100));
     } catch (error) {
       emit(state.copyWith(isLoading: false));
       print('Error picking PDF file: $error');
     }
   }
 
-  void rotate() async {}
+  void rotate() async {
+    try {
+      final newQuarterTurns = (state.quarterTurns + 1) % 4;
+      emit(state.copyWith(quarterTurns: newQuarterTurns));
+    } catch (error) {
+      print('Error rotating PDF: $error');
+    }
+  }
+
   void zoomIn() {
     try {
       final newZoomLevel =
@@ -115,15 +121,15 @@ extension HandleCubit on E03R00002Cubit {
       if (filePickerResult == null) return;
 
       final PdfFileModel pdfFileModel = PdfFileModel(
-        name: fileNameController.text,
-        profileType: state.profileType,
-        createdAt: state.createdAt,
-        signatory: state.signatory,
-        scannedDocument: state.scannedDocument,
-        note: noteController.text,
-        pdfFile: kIsWeb ? filePickerResult.bytes : null,
-        pdfPath: kIsWeb ? '' : filePickerResult.path ?? '',
-      );
+          name: fileNameController.text,
+          profileType: state.profileType,
+          createdAt: state.createdAt,
+          signatory: state.signatory,
+          scannedDocument: state.scannedDocument,
+          note: noteController.text,
+          pdfFile: kIsWeb ? filePickerResult.bytes : null,
+          pdfPath: kIsWeb ? '' : filePickerResult.path ?? '',
+          filePickerResult: filePickerResult);
       final updatedPdfFileModels = [
         ...?state.pdfFileModels,
         pdfFileModel,
@@ -167,17 +173,27 @@ extension HandleCubit on E03R00002Cubit {
     clearState();
   }
 
-  void reviewDocument(PdfFileModel pdfFileModel) {
+  Future<void> reviewDocument(PdfFileModel pdfFileModel) async {
     fileNameController.text = pdfFileModel.name!;
     dateController.text =
         DateTimeFormat.formatDateDDMMYY(pdfFileModel.createdAt!);
-    emit(state.copyWith(
+    curentPageController.text = '1';
+    percentController.text = '100%';
+    final document =
+        await OpenPdf.openPdfDocument(pdfFileModel.filePickerResult);
+    final maxPage = document.pagesCount;
+    emit(
+      state.copyWith(
         createdAt: pdfFileModel.createdAt,
         profileType: pdfFileModel.profileType,
         scannedDocument: pdfFileModel.scannedDocument,
         signatory: pdfFileModel.signatory,
         isEdit: true,
-        pdfFileModel: pdfFileModel));
+        pdfFileModel: pdfFileModel,
+        filePickerResult: pdfFileModel.filePickerResult,
+        maxPage: maxPage,
+      ),
+    );
   }
 
   void updatePdfFile() {
