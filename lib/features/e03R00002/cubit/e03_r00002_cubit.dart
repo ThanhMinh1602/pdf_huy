@@ -55,6 +55,22 @@ extension HandleCubit on E03R00002Cubit {
     }
   }
 
+  Future<void> showSideBar() async {
+    try {
+      final document = await OpenPdf.openPdfDocument(state.filePickerResult!);
+      final pagesCount = document.pagesCount;
+      for (int i = 0; i < pagesCount; i++) {
+        final page = await document.getPage(i);
+        print('page$page');
+      }
+      pdfViewerController.
+
+      emit(state.copyWith(showSideBar: !state.showSideBar));
+    } catch (error) {
+      print('Error showing sidebar: $error');
+    }
+  }
+
   void rotate() async {
     try {
       final newQuarterTurns = (state.quarterTurns + 1) % 4;
@@ -206,7 +222,7 @@ extension HandleCubit on E03R00002Cubit {
         signatory: state.signatory,
         scannedDocument: state.scannedDocument,
         note: noteController.text,
-        filePickerResult: state.filePickerResult  ,
+        filePickerResult: state.filePickerResult,
         pdfFile: kIsWeb
             ? state.filePickerResult?.bytes
             : state.pdfFileModel?.pdfFile,

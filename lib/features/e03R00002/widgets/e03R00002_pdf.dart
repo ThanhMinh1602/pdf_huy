@@ -10,6 +10,7 @@ import 'package:account/core/widgets/button/common_button.dart';
 import 'package:account/core/widgets/check_box/app_checkbox.dart';
 import 'package:account/core/widgets/input/common_dropdown.dart';
 import 'package:account/core/widgets/input/text_field_input.dart';
+import 'package:account/core/widgets/pdf_sidebar.dart';
 import 'package:account/features/e03R00002/cubit/e03_r00002_cubit.dart';
 import 'package:account/features/e03R00002/cubit/e03_r00002_state.dart';
 import 'package:account/features/e03R00002/domain/usecase/validate_usecase.dart';
@@ -120,6 +121,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
                 context.read<E03R00002Cubit>().curentPageController,
             percentController: context.read<E03R00002Cubit>().percentController,
             maxPage: state.maxPage ?? 0,
+            onTapMenu: () => context.read<E03R00002Cubit>().showSideBar(),
             onTapZoomIn: () => context.read<E03R00002Cubit>().zoomIn(),
             onTapZoomOut: () {
               context.read<E03R00002Cubit>().zoomOut();
@@ -129,30 +131,39 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
             onTapRotate: () => context.read<E03R00002Cubit>().rotate(),
           ),
           Expanded(
-            child: kIsWeb
-                ? state.filePickerResult?.bytes != null
-                    ? RotatedBox(
-                        quarterTurns: state.quarterTurns,
-                        child: SfPdfViewer.memory(
-                            interactionMode: PdfInteractionMode.selection,
-                            controller: context
-                                .read<E03R00002Cubit>()
-                                .pdfViewerController,
-                            maxZoomLevel: 100,
-                            onZoomLevelChanged: (details) {},
-                            state.filePickerResult!.bytes!),
-                      )
-                    : const Center(child: Text('No PDF selected'))
-                : state.filePickerResult!.path != null
-                    ? RotatedBox(
-                        quarterTurns: state.quarterTurns,
-                        child: SfPdfViewer.file(
-                            controller: context
-                                .read<E03R00002Cubit>()
-                                .pdfViewerController,
-                            File(state.filePickerResult!.path!)),
-                      )
-                    : const Center(child: Text('No PDF selected')),
+            child: Row(
+              children: [
+                CustomSidebar(
+                  isOpen: state.showSideBar,
+                ),
+                Expanded(
+                  child: kIsWeb
+                      ? state.filePickerResult?.bytes != null
+                          ? RotatedBox(
+                              quarterTurns: state.quarterTurns,
+                              child: SfPdfViewer.memory(
+                                  interactionMode: PdfInteractionMode.selection,
+                                  controller: context
+                                      .read<E03R00002Cubit>()
+                                      .pdfViewerController,
+                                  maxZoomLevel: 100,
+                                  onZoomLevelChanged: (details) {},
+                                  state.filePickerResult!.bytes!),
+                            )
+                          : const Center(child: Text('No PDF selected'))
+                      : state.filePickerResult!.path != null
+                          ? RotatedBox(
+                              quarterTurns: state.quarterTurns,
+                              child: SfPdfViewer.file(
+                                  controller: context
+                                      .read<E03R00002Cubit>()
+                                      .pdfViewerController,
+                                  File(state.filePickerResult!.path!)),
+                            )
+                          : const Center(child: Text('No PDF selected')),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -164,6 +175,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
       TextEditingController? percentController,
       TextEditingController? curentPageController,
       required int maxPage,
+      void Function()? onTapMenu,
       void Function()? onTapZoomOut,
       void Function()? onTapZoomIn,
       void Function()? onTapRotate,
@@ -178,7 +190,10 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Icon(Icons.menu, color: AppColor.c_FFFFFF, size: 30.0),
+          GestureDetector(
+              onTap: onTapMenu,
+              child:
+                  const Icon(Icons.menu, color: AppColor.c_FFFFFF, size: 30.0)),
           spaceW10,
           SizedBox(
             width: 400.0,
@@ -394,7 +409,7 @@ class _E03R00002PdfState extends State<E03R00002Pdf> {
       children: [
         CustomCheckBox(
           title: 'Chứng từ scan',
-          value: state.scannedDocument!,
+          value: state.scannedDocument,
           onChanged: (value) {
             context.read<E03R00002Cubit>().scannedDocumentOnCheck(value);
           },

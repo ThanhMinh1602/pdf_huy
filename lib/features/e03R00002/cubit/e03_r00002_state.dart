@@ -18,6 +18,7 @@ class E03R00002State {
   final double? currentZoom;
   final bool isEdit;
   final int quarterTurns;
+  final bool showSideBar;
 
   E03R00002State(
       {this.isLoading = false,
@@ -31,6 +32,7 @@ class E03R00002State {
       this.currentPage,
       this.maxPage,
       this.currentZoom,
+      this.showSideBar = false,
       this.isEdit = false,
       this.quarterTurns = 0});
 }
